@@ -1,6 +1,3 @@
-using System.Net.WebSockets;
-using System.Threading;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using WebSocketServer.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,8 +22,6 @@ app.Use(async (context, next) =>
     await next(context);
 });
 
-//app.UseMiddleware<WebSocketServerMiddleware>();
-//app.UseWebSocketServer();//Extension method implementation
 
 app.Run(async context =>
 {

@@ -14,12 +14,11 @@ namespace WebSocketServer.Middleware
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            // if (context.WebSockets.IsWebSocketRequest)
-            // {
             WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
             Console.WriteLine("Websocket Connected");
 
             string ConnID = _manager.AddSocket(webSocket);
+            await SendConnIDAsync(webSocket, ConnID);
 
             await ReceiveMessage(webSocket, async (result, buffer) =>
             {
@@ -35,12 +34,16 @@ namespace WebSocketServer.Middleware
                     return;
                 }
             });
-            // }
-            // else
-            // {
-            //     Console.WriteLine("Hello from the 2nd request delegate.");
-            //     await next(context);
-            // }
+        }
+
+        private async Task SendConnIDAsync(WebSocket socket, string connId)
+        {
+            var buffer = Encoding.UTF8.GetBytes("ConnID: " + connId);
+            await socket.SendAsync(
+                buffer,
+                WebSocketMessageType.Text,
+                endOfMessage: true,
+                cancellationToken: CancellationToken.None);
         }
 
         private async Task ReceiveMessage(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
