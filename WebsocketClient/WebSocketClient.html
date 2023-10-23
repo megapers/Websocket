@@ -82,6 +82,7 @@
           '<td class="commslog-data">' +
           htmlEscape(event.data) +
           "</td></tr>";
+        isConnID(event.data);
       };
     };
 
@@ -96,7 +97,7 @@
       // if (!socket || socket.readystate !== WebSocket.OPEN) {
       //   alert("Socket not connected");
       // }
-      var data = sendMessage.value;
+      var data = constructJSON();
       socket.send(data);
       commsLog.innerHTML +=
         "<tr>" +
@@ -106,6 +107,20 @@
         htmlEscape(data) +
         "</td></tr>";
     };
+
+    function isConnID(str) {
+      if (str.substring(0, 7) == "ConnID:") {
+        connID.innerHTML = "ConnID: " + str.substring(8, 45);
+      }
+    }
+
+    function constructJSON() {
+      return JSON.stringify({
+        From: connID.innerHTML.substring(8, connID.innerHTML.length),
+        To: recipients.value,
+        Message: sendMessage.value,
+      });
+    }
 
     function htmlEscape(str) {
       return str
